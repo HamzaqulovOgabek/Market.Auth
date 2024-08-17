@@ -1,4 +1,5 @@
-﻿using Market.Auth.Application.Services.AuthenticationService;
+﻿using System.Text;
+using Market.Auth.Application.Services.AuthenticationService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Market.Auth.Controllers.Auth;
@@ -6,6 +7,20 @@ namespace Market.Auth.Controllers.Auth;
 public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _service;
+
+
+    /// <summary>
+    /// This is a sample text file for download.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("download")]
+    public async Task<IActionResult> DownloadFile()
+    {
+        string fileContent = "This is a sample text file for download.";
+        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        string fileName = "sample.txt";
+        return File(fileBytes, "text/plain", fileName);
+    }
 
     public AuthController(IAuthenticationService service)
     {
