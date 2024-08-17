@@ -1,0 +1,6 @@
+@Market.Auth_HostAddress = http://localhost:5246
+
+GET {{Market.Auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
