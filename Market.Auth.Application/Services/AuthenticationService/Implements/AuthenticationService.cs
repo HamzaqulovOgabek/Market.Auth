@@ -3,13 +3,9 @@ using Market.Auth.Application.Extensions;
 using Market.Auth.Application.Services.UserServices;
 using Market.Auth.DataAccess.Repositories.UserRepo;
 using Market.Auth.DataAccess.Repositories.UserTokenRepository;
+using Market.Auth.Domain.Exceptions;
 using Market.Auth.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Market.Auth.Application.Services.AuthenticationService;
 
@@ -35,6 +31,9 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<OperationResult> RegisterUserAsync(UserRegistrationDto dto)
     {
+
+        throw new NotFoundException("XATO!!!");
+
         var existingUser = await _repository.GetUserByUsernameAsync(dto.UserName);
         if (existingUser != null)
         {
@@ -75,7 +74,7 @@ public class AuthenticationService : IAuthenticationService
     }
     public async Task<OperationResult> LogoutAsync(string token)
     {
-       await _tokenRepository.RevokeTokenAsync(token);
+        await _tokenRepository.RevokeTokenAsync(token);
 
         return new OperationResult { Success = true };
 
