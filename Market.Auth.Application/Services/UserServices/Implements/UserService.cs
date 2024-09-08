@@ -8,13 +8,6 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
 
-    //private readonly IJwtTokenGenerator jwtTokenGenerator;
-
-    //public UserService(IUserRepository repository, IJwtTokenGenerator jwtTokenGenerator)
-    //{
-    //    this._repository = repository;
-    //    this.jwtTokenGenerator = jwtTokenGenerator;
-    //}
     public UserService(IUserRepository repository)
     {
         _repository = repository;
@@ -27,7 +20,6 @@ public class UserService : IUserService
         {
             return null;
         }
-        //What fields should I need to return
         return new UserBaseDto
         {
             UserName = user.UserName,

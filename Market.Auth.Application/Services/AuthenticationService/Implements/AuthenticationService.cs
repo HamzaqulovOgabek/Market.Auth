@@ -31,9 +31,6 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<OperationResult> RegisterUserAsync(UserRegistrationDto dto)
     {
-
-        throw new NotFoundException("XATO!!!");
-
         var existingUser = await _repository.GetUserByUsernameAsync(dto.UserName);
         if (existingUser != null)
         {

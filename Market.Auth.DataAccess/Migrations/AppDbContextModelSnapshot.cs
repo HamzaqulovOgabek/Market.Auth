@@ -249,6 +249,8 @@ namespace Market.Auth.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("UserTokens");
                 });
 
@@ -308,6 +310,17 @@ namespace Market.Auth.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Market.Auth.Domain.Models.UserToken", b =>
+                {
+                    b.HasOne("Market.Auth.Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
