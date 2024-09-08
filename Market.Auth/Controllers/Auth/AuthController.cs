@@ -7,25 +7,11 @@ namespace Market.Auth.Controllers.Auth;
 public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _service;
-
-
-    /// <summary>
-    /// This is a sample text file for download.
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet("download")]
-    public async Task<IActionResult> DownloadFile()
-    {
-        string fileContent = "This is a sample text file for download.";
-        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        string fileName = "sample.txt";
-        return File(fileBytes, "text/plain", fileName);
-    }
-
     public AuthController(IAuthenticationService service)
     {
         this._service = service;
     }
+
     [HttpPost]
     [Route("/register")]
     public async Task<IActionResult> RegisterAsync(UserRegistrationDto dto)
@@ -50,21 +36,6 @@ public class AuthController : ControllerBase
         }
         return Ok(operationResult.Token);
     }
-    //This method is really needed?
-    //[HttpGet]
-    //[Route("/verify")]
-    //public IActionResult Verify(string token)
-    //{
-    //    var result = tokenManager.Verify(token);
-    //    return Ok(result);
-    //}
-    //[HttpGet]
-    //[Route("/getuserinfo")]
-    //public IActionResult GetUserInfo(string token)
-    //{
-    //    var userName = tokenManager.GetUserInfoByToken(token);
-    //    return Ok(userName);
-    //}
 
     [HttpPost("logout")]
     public async Task<IActionResult> LogoutAsync(string token)

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Market.Auth.Controllers;
 
 [ApiController]
-
 [Route("api/[controller]/[action]")]
 public class UserController : ControllerBase
 {
@@ -16,8 +15,6 @@ public class UserController : ControllerBase
         this._service = service;
     }
 
-
-
     [HttpGet("{id}")]
     [JwtAuthFilter]
     public async Task<IActionResult> GetAsync(int id)
@@ -25,9 +22,8 @@ public class UserController : ControllerBase
         var user = await _service.GetAsync(id);
         return Ok(user);
     }
-
     [HttpPost]
-    [ApiKeyAuthFilter]
+    //[ApiKeyAuthFilter]
     public async Task<IActionResult> UpdateAsync(UserUpdateDto dto)
     {
         var operationResult = await _service.UpdateAsync(dto);
@@ -39,7 +35,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    [ApiKeyAuthFilter]
+    //[ApiKeyAuthFilter]
     public async Task<IActionResult> DeleteAsync(int id)
     {
         await _service.DeleteAsync(id);
