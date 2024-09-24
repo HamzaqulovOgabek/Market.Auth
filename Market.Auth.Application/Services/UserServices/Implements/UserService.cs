@@ -1,16 +1,20 @@
-﻿using Market.Auth.Application.Dto;
+﻿using AutoMapper;
+using Market.Auth.Application.Dto;
 using Market.Auth.Application.Extensions;
 using Market.Auth.DataAccess.Repositories.UserRepo;
+using Market.Auth.Domain.Models;
 
 namespace Market.Auth.Application.Services.UserServices;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
+    private readonly IMapper _mapper;
 
-    public UserService(IUserRepository repository)
+    public UserService(IUserRepository repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     public async Task<UserBaseDto> GetAsync(int id)
@@ -20,56 +24,32 @@ public class UserService : IUserService
         {
             return null;
         }
-        return new UserBaseDto
-        {
-            UserName = user.UserName,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            MiddleName = user.MiddleName,
-        };
+        return _mapper.Map<UserBaseDto>(user);
     }
-
     public IQueryable<UserBaseDto> GetList(BaseSortFilterDto options)
     {
         var users = _repository.GetAll()
             .SortFilter(options)
-            .Select(x => new UserBaseDto
-            {
-                UserName = x.UserName,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                MiddleName = x.MiddleName,
-                //PasswordHash = x.PasswordHash,
-                //Salt = x.Salt
-            });
+            .Select(x => _mapper.Map<UserBaseDto>(x));
+
         return users;
-
     }
-
     public async Task<OperationResult> UpdateAsync(UserUpdateDto dto)
     {
-        var user = await _repository.GetByIdAsync(dto.Id);
-        if (user == null)
-        {
-            return new OperationResult
-            {
-                Success = false,
-                Errors = new List<string> { "User not found" }
-            };
-        }
+        var userDto = await GetAsync(dto.Id);
 
-        user.UserName = dto.UserName ?? user.UserName;
-        user.FirstName = dto.FirstName ?? user.FirstName;
-        user.LastName = dto.LastName ?? user.LastName;
-        user.MiddleName = dto.MiddleName ?? user.MiddleName;
+        userDto.UserName = dto.UserName ?? userDto.UserName;
+        userDto.FirstName = dto.FirstName ?? userDto.FirstName;
+        userDto.LastName = dto.LastName ?? userDto.LastName;
+        userDto.MiddleName = dto.MiddleName ?? userDto.MiddleName;
 
-        var updatedUserId = await _repository.UpdateAsync(user);
+        var updatedUserId = await _repository.UpdateAsync(_mapper.Map<User>(userDto));
 
         return new OperationResult { Success = true };
     }
-
     public async Task DeleteAsync(int id)
     {
+        await GetAsync(id);
         await _repository.DeleteAsync(id);
     }
 }
