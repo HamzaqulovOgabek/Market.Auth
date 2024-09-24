@@ -7,7 +7,7 @@ public interface IBaseRepository<TEntity, TId>
     where TId : struct
 {
     Task<TId> CreateAsync(TEntity entity);
-    Task DeleteAsync(int id);
+    Task DeleteAsync(TId id);
     IQueryable<TEntity> GetAll();
     Task<TEntity?> GetByIdAsync(TId id);
     Task<TId> UpdateAsync(TEntity entity);

@@ -1,5 +1,7 @@
 ﻿using Market.Auth.DataAccess.Repositories.Base;
+using Market.Auth.Domain.Enums;
 using Market.Auth.Domain.Models;
+using Market.Auth.Domain.Models.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace Market.Auth.DataAccess.Repositories;
@@ -12,7 +14,7 @@ public class BaseRepository<TEntity, TId> : IBaseRepository<TEntity, TId>
 
     public BaseRepository(AppDbContext dbContext)
     {
-        this.Context = dbContext;
+        Context = dbContext;
     }
     public IQueryable<TEntity> GetAll()
     {
@@ -52,13 +54,19 @@ public class BaseRepository<TEntity, TId> : IBaseRepository<TEntity, TId>
         return entity.Id;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(TId id)
     {
-        var entity = await Context.Set<TEntity>().FindAsync(id);
-        if (entity == null)
-            throw new Exception("Entity not found with this id");
+        var entity = await GetByIdAsync(id);
+        if(entity is IHaveState)
+        {
+            var iHaveState = entity as IHaveState;
+            iHaveState.State = State.Inactive;
+        }
+        else
+        {
+            Context.Set<TEntity>().Remove(entity);
+        }
 
-        Context.Set<TEntity>().Remove(entity);    
         await Context.SaveChangesAsync();
     }
 }
