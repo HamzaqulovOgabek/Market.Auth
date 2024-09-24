@@ -1,18 +1,19 @@
 ﻿using Market.Auth.Domain.Enums;
 using Market.Auth.Domain.Models.Base;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Market.Auth.Domain.Models;
 
-public class User : BaseEntity<int>, IHaveState //: Auditable<int>
+public class User : Auditable<int>, IHaveState
 {
-    //Do I need to inherit from Auditable?
-    public required string UserName { get; set; }
+    public string? UserName { get; set; }
+    [EmailAddress]
+    public required string Email { get; set; }
     public required string PasswordHash { get; set; }
     public string? Salt { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? MiddleName { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     public State State { get; set; } = State.Active;
 }
