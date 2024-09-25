@@ -6,12 +6,10 @@ namespace Market.Auth.Application.Services.AuthenticationService;
 
 public class UserLoginDto
 {
-    //[UserNameValidation]
-    [RegularExpression("^[a-zA-Z0-9]{5,20}$", ErrorMessage = "Invalid UserName")]
-    public required string UserName { get; set; }
-    [StringLength(20, MinimumLength = 4)]
-    [PasswordPropertyText]
-    public required string PasswordHash { get; set; }
+    [EmailValidation]
+    public required string Email { get; set; } 
+    [PasswordValidation]
+    public required string Password { get; set; }
 
     public bool IsValidUserName(string userName)
     {
@@ -27,6 +25,11 @@ public class UserLoginDto
         bool hasSpecialChar = password.Any(ch => !char.IsLetterOrDigit(ch));
 
         return hasUpperCase && hasLowerCase;
+    }
+    public bool IsValidEmail(string email)
+    {
+        var regex = new Regex("^[\\w\\d]{5,20}@[\\w\\d]+.[\\w]{2,}$");
+        return regex.IsMatch(email);
     }
 
 }
