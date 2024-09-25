@@ -16,4 +16,6 @@ public class User : Auditable<int>, IHaveState
     public string? LastName { get; set; }
     public string? MiddleName { get; set; }
     public State State { get; set; } = State.Active;
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LockoutEndTime { get; set; }
 }
