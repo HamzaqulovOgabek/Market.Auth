@@ -12,8 +12,8 @@ public class UserRegistrationDto : UserLoginDto
     {
         return new User
         {
-            UserName = dto.UserName,
-            PasswordHash = dto.PasswordHash,
+            Email = dto.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             FirstName = dto.FirstName,
             LastName = dto.LastName,
         };
