@@ -6,10 +6,13 @@ public class PasswordValidationAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        var model = (UserRegistrationDto)validationContext.ObjectInstance;
-        if(string.IsNullOrWhiteSpace(model.PasswordHash) || !model.IsValidPassword(model.PasswordHash))
+        var dto = (UserRegistrationDto)validationContext.ObjectInstance;
+        if (dto == null ||
+            string.IsNullOrWhiteSpace(dto.Password) ||
+            !dto.IsValidPassword(dto.Password)
+        )
         {
-            return new ValidationResult("Password must be at least 8 characters.");
+            return new ValidationResult("Password must be at least 8 characters. Including Upper, lower, digit and special character");
         }
         return ValidationResult.Success;
     }
