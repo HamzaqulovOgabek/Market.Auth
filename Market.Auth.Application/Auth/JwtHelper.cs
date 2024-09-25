@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Market.Auth.Application.Auth;
 
-public class JwtHelper
+public class JwtHelper : IJwtHelper
 {
     private readonly JwtSettings _jwtSettings;
     private readonly JwtSecurityTokenHandler _tokenHandler;
@@ -19,9 +19,11 @@ public class JwtHelper
 
     public string GenerateToken(string userName)
     {
-        List<Claim> claims = new List<Claim>();
-        //claims.Add(new(ClaimTypes.NameIdentifier, userId.ToString()));
-        claims.Add(new(ClaimTypes.NameIdentifier, userName));
+        List<Claim> claims =
+        [
+            //claims.Add(new(ClaimTypes.NameIdentifier, userId.ToString()));
+            new(ClaimTypes.NameIdentifier, userName),
+        ];
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -30,7 +32,7 @@ public class JwtHelper
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey)),
                 SecurityAlgorithms.HmacSha256Signature),
-            Issuer = _jwtSettings.Issuer,   
+            Issuer = _jwtSettings.Issuer,
             Audience = _jwtSettings.Audience
         };
 
