@@ -43,7 +43,8 @@ public class ExceptionHandlingMiddleware
         {
             StatusCode = context.Response.StatusCode,
             Message = "An internal server error occurred. Please try again later.",
-            Detailed = exception.Message // Optional: Include the exception message for debugging
+            Detailed = exception.Message, // Optional: Include the exception message for debugging
+            InnerException = exception.InnerException?.Message
         };
 
         return context.Response.WriteAsJsonAsync(response);
