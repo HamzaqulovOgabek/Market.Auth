@@ -39,11 +39,11 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
             //Arrange
             var userLoginDto = new UserLoginDto
             {
-                Email = "non_existent_email@example.com",
+                EmailOrUsername = "non_existent_email@example.com",
                 Password = "plain_password"
             };
             _mockUserRepository
-                .Setup(repo => repo.GetUserByUsernameAsync(userLoginDto.Email))
+                .Setup(repo => repo.GetUserByEmailOrUsernameAsync(userLoginDto.EmailOrUsername))
                 .ReturnsAsync((User)null);
 
             // Act
@@ -60,7 +60,7 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
             //Arrange
             var userLoginDto = new UserLoginDto
             {
-                Email = "existing_user@example.com",
+                EmailOrUsername = "existing_user@example.com",
                 Password = "wrong_password"
             };
 
@@ -71,7 +71,7 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("correct_password")
             };
             _mockUserRepository
-                .Setup(x => x.GetUserByUsernameAsync(userLoginDto.Email))
+                .Setup(x => x.GetUserByEmailOrUsernameAsync(userLoginDto.EmailOrUsername))
                 .ReturnsAsync(existingUser);
 
             //Act
@@ -80,6 +80,31 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
             //Assert
             Assert.False(result.Success);
             Assert.That(result.Errors, Does.Contain("Invalid username or password").IgnoreCase);
+        }
+
+        [Test]
+        public async Task WhenLoginFailsFiveTimes_UsersGetsLockedout()
+        {
+            //Arrange
+            var userLoginDto = new UserLoginDto
+            {
+                EmailOrUsername = "existing@email.com",
+                Password = "wrong_password"
+            };
+            var user = new User
+            {
+                Email = "existing@email.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("correct_password"),
+                FailedLoginAttempts = 4
+            };
+            _mockUserRepository
+                .Setup(repo => repo.GetUserByEmailOrUsernameAsync(userLoginDto.EmailOrUsername))
+                .ReturnsAsync(user);
+
+            var result = await _authenticationService.LoginAsync(userLoginDto);
+
+            Assert.That(user.FailedLoginAttempts, Is.EqualTo(0));
+            Assert.IsNotNull(user.LockoutEndTime);
         }
     }
 }

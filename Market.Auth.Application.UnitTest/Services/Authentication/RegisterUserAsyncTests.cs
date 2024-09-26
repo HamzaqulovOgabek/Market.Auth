@@ -40,11 +40,11 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
 
             var userRegistrationDto = new UserRegistrationDto
             {
-                Email = "non_existent_email@example.com",
+                EmailOrUsername = "non_existent_email@example.com",
                 Password = "da"
             };
             _mockUserRepository
-                .Setup(repo => repo.GetUserByUsernameAsync(userRegistrationDto.Email))
+                .Setup(repo => repo.GetUserByEmailOrUsernameAsync(userRegistrationDto.EmailOrUsername))
                 .ReturnsAsync((User)null);
 
             //Act
@@ -65,12 +65,12 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
                 PasswordHash = "hashed password"
             };
             _mockUserRepository
-                .Setup(x => x.GetUserByUsernameAsync("existing@email.com"))
+                .Setup(x => x.GetUserByEmailOrUsernameAsync("existing@email.com"))
                 .ReturnsAsync(existingUser);
 
             var userRegistrationDto = new UserRegistrationDto
             {
-                Email = "existing@email.com",
+                EmailOrUsername = "existing@email.com",
                 Password = "hash"
             };
 
@@ -87,7 +87,7 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
         {
             var userRegistrationDto = new UserRegistrationDto
             {
-                Email = "new_user@example.com",
+                EmailOrUsername = "new_user@example.com",
                 Password = "plain_password"
             };
 
@@ -105,11 +105,11 @@ namespace Market.Auth.Application.UnitTest.Services.Authentication
             // Arrange
             var userRegistrationDto = new UserRegistrationDto
             {
-                Email = "concurrent_email@example.com",
+                EmailOrUsername = "concurrent_email@example.com",
                 Password = "da"
             };
             _mockUserRepository
-                .Setup(repo => repo.GetUserByUsernameAsync(userRegistrationDto.Email))
+                .Setup(repo => repo.GetUserByEmailOrUsernameAsync(userRegistrationDto.EmailOrUsername))
                 .ReturnsAsync((User)null);
 
             var tasks = new List<Task<OperationResult>>();
