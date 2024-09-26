@@ -9,7 +9,7 @@ public class User : Auditable<int>, IHaveState
 {
     public string? UserName { get; set; }
     [EmailAddress]
-    public required string Email { get; set; }
+    public  string? Email { get; set; }
     public required string PasswordHash { get; set; }
     public string? Salt { get; set; }
     public string? FirstName { get; set; }
@@ -18,4 +18,7 @@ public class User : Auditable<int>, IHaveState
     public State State { get; set; } = State.Active;
     public int FailedLoginAttempts { get; set; }
     public DateTime? LockoutEndTime { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiry { get; set; }
+
 }

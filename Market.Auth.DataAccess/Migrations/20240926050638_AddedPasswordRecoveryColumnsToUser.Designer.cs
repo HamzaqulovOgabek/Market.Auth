@@ -4,6 +4,7 @@ using Market.Auth.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Market.Auth.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240926050638_AddedPasswordRecoveryColumnsToUser")]
+    partial class AddedPasswordRecoveryColumnsToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,6 +142,7 @@ namespace Market.Auth.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("FailedLoginAttempts")
@@ -169,7 +173,7 @@ namespace Market.Auth.DataAccess.Migrations
                     b.Property<string>("PasswordResetToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("PasswordResetTokenExpiry")
+                    b.Property<DateTime>("PasswordResetTokenExpiry")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Salt")
@@ -184,8 +188,7 @@ namespace Market.Auth.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique()
-                        .HasFilter("[Email] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("UserName")
                         .IsUnique()
