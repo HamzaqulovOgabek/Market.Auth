@@ -4,7 +4,8 @@ namespace Market.Auth.Application.Auth
 {
     public interface IJwtHelper
     {
-        string GenerateToken(string userName);
+        string GenerateRefreshToken();
+        string GenerateToken(string userName, TimeSpan expiryDuration);
         ClaimsPrincipal ValidateToken(string token);
     }
 }

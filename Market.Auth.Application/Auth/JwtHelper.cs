@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Market.Auth.Application.Auth;
@@ -17,18 +18,17 @@ public class JwtHelper : IJwtHelper
         _tokenHandler = tokenHandler;
     }
 
-    public string GenerateToken(string userName)
+    public string GenerateToken(string userId, TimeSpan expiryDuration)
     {
-        List<Claim> claims =
-        [
-            //claims.Add(new(ClaimTypes.NameIdentifier, userId.ToString()));
-            new(ClaimTypes.NameIdentifier, userName),
-        ];
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId)
+        };
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),  // Set expiration time
+            Expires = DateTime.Now.Add(expiryDuration),  // Set expiration time
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey)),
                 SecurityAlgorithms.HmacSha256Signature),
@@ -69,5 +69,16 @@ public class JwtHelper : IJwtHelper
         }
 
         return null;
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
     }
 }
