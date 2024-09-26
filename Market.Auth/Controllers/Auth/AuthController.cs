@@ -32,9 +32,9 @@ public class AuthController : ControllerBase
         var operationResult = await _service.LoginAsync(dto);
         if (!operationResult.Success)
         {
-            return BadRequest(operationResult.Errors);
+            return BadRequest(operationResult);
         }
-        return Ok(operationResult.Token);
+        return Ok(operationResult);
     }
 
     [HttpPost("logout")]
@@ -48,6 +48,13 @@ public class AuthController : ControllerBase
         }
 
         return BadRequest(result.Errors);
+    }
+    
+    [HttpPost("/refresh-token")]
+    public async Task<IActionResult> RefreshTokenAsync(string refreshToken)
+    {
+        var token = await _service.RefreshTokenAsync(refreshToken);
+        return Ok(token);
     }
 
 }
