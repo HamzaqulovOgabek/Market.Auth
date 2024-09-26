@@ -9,5 +9,4 @@ public interface IUserService
     Task<UserBaseDto> GetAsync(int id);
     IQueryable<UserBaseDto> GetList(BaseSortFilterDto options);
     Task<OperationResult> UpdateAsync(UserUpdateDto dto);
-    Task UpdateUsernameAsync(UsernameUpdateDto dto);
 }

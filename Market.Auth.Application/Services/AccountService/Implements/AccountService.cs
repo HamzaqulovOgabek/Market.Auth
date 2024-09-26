@@ -1,5 +1,6 @@
 ﻿using Market.Auth.Application.Auth;
 using Market.Auth.Application.Extensions;
+using Market.Auth.Application.Services.UserServices;
 using Market.Auth.DataAccess.Repositories.UserRepo;
 using Market.Auth.Domain.Models;
 
@@ -62,6 +63,23 @@ public class AccountService : IAccountService
         await _repository.UpdateAsync(user);
 
         return new OperationResult { Success = true };
+    }
+
+    public async Task UpdateUsernameAsync(UsernameUpdateDto dto)
+    {
+        var user = await _repository.GetByIdAsync(dto.UserId);
+
+        if (user == null || (user.UserName != dto.OldUsername || user.UserName != null))
+        {
+            throw new Exception("Something wrong");
+        }
+
+        var existingUsername = await _repository.GetUserByEmailOrUsernameAsync(dto.NewUsername);
+        if (existingUsername != null)
+            throw new Exception("Username is already in use. Please choose another.");
+
+        user.UserName = dto.NewUsername;
+        await _repository.UpdateAsync(user);
     }
     private async Task SendPasswordResetLinkToEmailAsync(User? user)
     {

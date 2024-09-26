@@ -14,23 +14,6 @@ public class EmailService : IEmailService
     private readonly string _password = "qpbe fvee ftiy qanb";
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        /*
-        var mailMessage = new MailMessage
-        {
-            From = new MailAddress(_from),
-            To = { new MailAddress(to) },
-            Subject = subject,
-            Body = body,
-            IsBodyHtml = true
-        };
-
-        using (var smtpClient = new SmtpClient(_smtpServer, _smtpPort))
-        {
-            smtpClient.EnableSsl = true;
-            smtpClient.Credentials = new NetworkCredential(_from, _password);
-            await smtpClient.SendMailAsync(mailMessage);
-        }
-        */
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(string.Empty, _from));
         message.To.Add(new MailboxAddress(string.Empty, to));

@@ -46,22 +46,6 @@ public class UserService : IUserService
 
         return new OperationResult { Success = true };
     }
-    public async Task UpdateUsernameAsync(UsernameUpdateDto dto)
-    {
-        var user = await _repository.GetByIdAsync(dto.UserId);
-
-        if (user == null || (user.UserName != dto.OldUsername || user.UserName != null))
-        {
-            throw new Exception("Something wrong");
-        }
-        
-        var existingUsername = await _repository.GetUserByEmailOrUsernameAsync(dto.NewUsername);
-        if (existingUsername != null)
-            throw new Exception("Username is already in use. Please choose another.");
-
-        user.UserName = dto.NewUsername;
-        await _repository.UpdateAsync(user);
-    }
     public async Task DeleteAsync(int id)
     {
         await GetAsync(id);
