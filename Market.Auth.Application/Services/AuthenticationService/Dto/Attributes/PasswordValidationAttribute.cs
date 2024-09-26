@@ -6,7 +6,7 @@ public class PasswordValidationAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        var dto = (UserRegistrationDto)validationContext.ObjectInstance;
+        var dto = (UserLoginDto)validationContext.ObjectInstance;
         if (dto == null ||
             string.IsNullOrWhiteSpace(dto.Password) ||
             !dto.IsValidPassword(dto.Password)

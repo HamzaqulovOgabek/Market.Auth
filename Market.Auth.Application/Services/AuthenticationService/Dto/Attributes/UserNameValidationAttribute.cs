@@ -8,9 +8,11 @@ public class UserNameValidationAttribute : ValidationAttribute
     {
         //var userName =  value as string;
         var model = (UserRegistrationDto)validationContext.ObjectInstance;
-        if (string.IsNullOrWhiteSpace(model.UserName) || !model.IsValidUserName(model.UserName))
+        if (string.IsNullOrWhiteSpace(model.EmailOrUsername) || !model.IsValidUserName(model.EmailOrUsername))
         {
-            return new ValidationResult("Invalid Username. It must be between 3 and 20 characters.");
+            string errorMessage = "Your Username must be at least 3 characters long, and only contain letters, numbers, underscores, and dashes. It must start and end with alphanumeric characters. Spaces are not allowed. Username is not allowed. Please try again.";
+
+            return new ValidationResult(errorMessage);
         }
         return ValidationResult.Success;
     }
