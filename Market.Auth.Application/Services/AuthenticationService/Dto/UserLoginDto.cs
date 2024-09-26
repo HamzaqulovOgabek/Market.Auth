@@ -6,14 +6,14 @@ namespace Market.Auth.Application.Services.AuthenticationService;
 
 public class UserLoginDto
 {
-    [EmailValidation]
-    public required string Email { get; set; } 
+    [EmailOrUserNameValidation]
+    public required string EmailOrUsername { get; set; } 
     [PasswordValidation]
     public required string Password { get; set; }
 
     public bool IsValidUserName(string userName)
     {
-        var regex = new Regex(@"^[a-zA-Z0-9._]{3,20}$");
+        var regex = new Regex(@"^(?=[a-zA-Z0-9._]{3,20}$)(?!.*[_.]{2})[^_.].*[^_.]$");
         return regex.IsMatch(userName);
     }
     public bool IsValidPassword(string password)

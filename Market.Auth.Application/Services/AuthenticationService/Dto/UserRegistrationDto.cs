@@ -10,9 +10,17 @@ public class UserRegistrationDto : UserLoginDto
 
     public static explicit operator User(UserRegistrationDto dto)
     {
+        var userName = dto.IsValidUserName(dto.EmailOrUsername)
+            ? dto.EmailOrUsername
+            : null;
+
+        var email = dto.IsValidEmail(dto.EmailOrUsername)
+            ? dto.EmailOrUsername
+            : null;
         return new User
         {
-            Email = dto.Email,
+            UserName = userName,
+            Email = email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             FirstName = dto.FirstName,
             LastName = dto.LastName,

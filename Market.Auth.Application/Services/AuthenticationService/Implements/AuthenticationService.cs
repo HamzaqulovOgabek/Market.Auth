@@ -35,13 +35,13 @@ public class AuthenticationService : IAuthenticationService
         // Loop to check for race conditions and avoid duplicate registrations
         for (int i = 0; i < 20; i++)  // Retry a few times in case of concurrency issues
         {
-            var existingUser = await _repository.GetUserByUsernameAsync(dto.Email);
+            var existingUser = await _repository.GetUserByEmailOrUsernameAsync(dto.EmailOrUsername);
             if (existingUser != null)
             {
                 return new OperationResult
                 {
                     Success = false,
-                    Errors = new List<string> { "UserName already exist" }
+                    Errors = new List<string> { "UserName already exist. Please choose another." }
                 };
             }
         }
@@ -52,7 +52,7 @@ public class AuthenticationService : IAuthenticationService
     }
     public async Task<OperationResult> LoginAsync(UserLoginDto dto)
     {
-        var user = await _repository.GetUserByUsernameAsync(dto.Email);
+        var user = await _repository.GetUserByEmailOrUsernameAsync(dto.EmailOrUsername);
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
             return await HandleFailedLoginAsync(user);
@@ -75,39 +75,87 @@ public class AuthenticationService : IAuthenticationService
         }
         var userDto = new UserBaseDto
         {
-            UserName = user.UserName,
             FirstName = user.FirstName,
             LastName = user.LastName,
             MiddleName = user.MiddleName,
         };
         return userDto;
     }
-
-    private async Task<OperationResult> HandleFailedLoginAsync(User user)
+    public async Task<OperationResult> RefreshTokenAsync(string refreshToken)
     {
-        user.FailedLoginAttempts++;
-
-        if (user.FailedLoginAttempts >= 5)
+        var userToken = await _tokenRepository.GetTokenAsync(refreshToken);
+        if (userToken == null ||
+            userToken.IsRevoked ||
+            userToken.ExpiryDate > DateTime.Now)
         {
-            user.LockoutEndTime = DateTime.Now.AddMinutes(15); //lock user for 15 mins 
-            user.FailedLoginAttempts = 0; //reset after lockout
+            return new OperationResult
+            {
+                Success = false,
+                Errors = new List<string> { "Invalid or expired refresh token" }
+            };
         }
 
-        await _repository.UpdateAsync(user);
+        await _tokenRepository.RevokeTokenAsync(userToken.Token); //revoke old refresh token
+
+        var newAccessToken = _jwtHelper.GenerateToken(userToken.UserId.ToString(), TimeSpan.FromMinutes(30));
+        var refreshtoken = _jwtHelper.GenerateRefreshToken();
+
+        userToken.Token = refreshToken;
+        userToken.CreatedDate = DateTime.Now;
+        userToken.ExpiryDate = DateTime.Now.AddDays(7);
+        
+        await _tokenRepository.AddTokenAsync(userToken);
+
+        return new OperationResult
+        {
+            Success = true,
+            AccessToken = newAccessToken,
+            RefreshToken = refreshtoken
+        };
+    }
+    private async Task<OperationResult> HandleFailedLoginAsync(User user)
+    {
+        if (user != null)
+        {
+            user.FailedLoginAttempts++;
+
+            if (user.FailedLoginAttempts >= 5)
+            {
+                user.LockoutEndTime = DateTime.Now.AddMinutes(15); //lock user for 15 mins 
+                user.FailedLoginAttempts = 0; //reset after lockout
+                return new OperationResult
+                {
+                    Success = false,
+                    Errors = new List<string> { "Try a few moments later" }
+                };
+            }
+            await _repository.UpdateAsync(user);
+        }
 
         return new OperationResult
         {
             Success = false,
-            Errors = new List<string> { "Invalid username or password" }
+            Errors = new List<string> { "Login Fails" }
         };
     }
     private async Task<OperationResult> HandleSuccessfulLoginAsync(User user)
     {
+        if (user.LockoutEndTime.HasValue && user.LockoutEndTime.Value < DateTime.Now)
+        {
+            return new OperationResult
+            {
+                Success = false,
+                Errors = new List<string> { "Try a few moments later" }
+            };
+        }
+
         user.FailedLoginAttempts = 0;
         user.LockoutEndTime = null;
 
-        var token = _jwtHelper.GenerateToken(user.UserName);
-        if (string.IsNullOrWhiteSpace(token))
+        var accessToken = _jwtHelper.GenerateToken(user.Id.ToString(), new TimeSpan(15));
+        var refreshToken = _jwtHelper.GenerateRefreshToken();
+
+        if (string.IsNullOrWhiteSpace(accessToken))
         {
             return new OperationResult
             {
@@ -118,14 +166,19 @@ public class AuthenticationService : IAuthenticationService
         var userToken = new UserToken
         {
             UserId = user.Id,
-            Token = token,
-            ExpiryDate = DateTime.Now.AddMinutes(_jwtSettings.ExpiryMinutes),
+            Token = refreshToken,
+            ExpiryDate = DateTime.Now.AddDays(7),
             IsRevoked = false,
             CreatedDate = DateTime.Now
         };
 
         await _tokenRepository.AddTokenAsync(userToken);
 
-        return new OperationResult { Success = true, Token = token };
+        return new OperationResult
+        {
+            Success = true,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 }
