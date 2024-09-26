@@ -4,7 +4,8 @@ public class OperationResult
 {
     public bool Success { get; set; }
     public List<string> Errors { get; set; } = new List<string>();
-    public string? Token { get; set; }
+    public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
     
     public OperationResult()
     {
