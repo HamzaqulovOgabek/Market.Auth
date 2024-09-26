@@ -38,7 +38,6 @@ public class UserService : IUserService
     {
         var userDto = await GetAsync(dto.Id);
 
-        userDto.UserName = dto.UserName ?? userDto.UserName;
         userDto.FirstName = dto.FirstName ?? userDto.FirstName;
         userDto.LastName = dto.LastName ?? userDto.LastName;
         userDto.MiddleName = dto.MiddleName ?? userDto.MiddleName;
@@ -46,6 +45,22 @@ public class UserService : IUserService
         var updatedUserId = await _repository.UpdateAsync(_mapper.Map<User>(userDto));
 
         return new OperationResult { Success = true };
+    }
+    public async Task UpdateUsernameAsync(UsernameUpdateDto dto)
+    {
+        var user = await _repository.GetByIdAsync(dto.UserId);
+
+        if (user == null || (user.UserName != dto.OldUsername || user.UserName != null))
+        {
+            throw new Exception("Something wrong");
+        }
+        
+        var existingUsername = await _repository.GetUserByEmailOrUsernameAsync(dto.NewUsername);
+        if (existingUsername != null)
+            throw new Exception("Username is already in use. Please choose another.");
+
+        user.UserName = dto.NewUsername;
+        await _repository.UpdateAsync(user);
     }
     public async Task DeleteAsync(int id)
     {
