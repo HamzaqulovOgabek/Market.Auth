@@ -10,8 +10,8 @@ public class EmailValidationAttribute : ValidationAttribute
 
 
         if (dto == null || 
-            string.IsNullOrWhiteSpace(dto.Email) || 
-            !dto.IsValidEmail(dto.Email)
+            string.IsNullOrWhiteSpace(dto.EmailOrUsername) || 
+            !dto.IsValidEmail(dto.EmailOrUsername)
         )
         {
             return new ValidationResult("Invalid Email");
