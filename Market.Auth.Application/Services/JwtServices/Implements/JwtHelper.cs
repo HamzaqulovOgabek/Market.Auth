@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Market.Auth.Application.Services.JwtServices.Dto;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Market.Auth.Application.Auth;
+namespace Market.Auth.Application.Services.JwtServices.Implements;
 
 public class JwtHelper : IJwtHelper
 {

@@ -1,4 +1,4 @@
-﻿namespace Market.Auth.Application.Auth;
+﻿namespace Market.Auth.Application.Services.JwtServices.Dto;
 public class JwtSettings
 {
     public string? SecretKey { get; set; }

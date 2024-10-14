@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Market.Auth.Application.Auth
+namespace Market.Auth.Application.Services.JwtServices
 {
     public interface IJwtHelper
     {

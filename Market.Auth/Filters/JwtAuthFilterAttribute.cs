@@ -1,4 +1,4 @@
-﻿using Market.Auth.Application.Auth;
+﻿using Market.Auth.Application.Services.JwtServices.Implements;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

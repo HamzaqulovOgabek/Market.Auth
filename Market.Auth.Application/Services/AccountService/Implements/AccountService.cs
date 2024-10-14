@@ -1,5 +1,5 @@
-﻿using Market.Auth.Application.Auth;
-using Market.Auth.Application.Extensions;
+﻿using Market.Auth.Application.Extensions;
+using Market.Auth.Application.Services.JwtServices;
 using Market.Auth.Application.Services.UserServices;
 using Market.Auth.DataAccess.Repositories.UserRepo;
 using Market.Auth.Domain.Models;
