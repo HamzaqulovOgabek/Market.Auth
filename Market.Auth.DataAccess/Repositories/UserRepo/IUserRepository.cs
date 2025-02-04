@@ -5,6 +5,7 @@ namespace Market.Auth.DataAccess.Repositories.UserRepo
 {
     public interface IUserRepository : IBaseRepository<User, int>
     {
-        Task<User?> GetUserByUsernameAsync(string username);
+        Task<User?> GetUserByEmailOrUsernameAsync(string username);
+        Task<User?> GetUserByPasswordResetToken(string token);
     }
 }

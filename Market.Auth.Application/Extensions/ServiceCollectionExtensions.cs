@@ -1,5 +1,7 @@
-﻿using Market.Auth.Application.Auth;
-using Market.Auth.Application.Services.AuthenticationService;
+﻿using Market.Auth.Application.Services.AuthenticationService;
+using Market.Auth.Application.Services.JwtServices;
+using Market.Auth.Application.Services.JwtServices.Dto;
+using Market.Auth.Application.Services.JwtServices.Implements;
 using Market.Auth.Application.Services.PermissionGroupService;
 using Market.Auth.Application.Services.PermissionServices;
 using Market.Auth.Application.Services.RoleService;
@@ -8,6 +10,7 @@ using Market.Auth.Application.Services.UserServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 
 namespace Market.Auth.Application.Extensions;
 
@@ -18,6 +21,8 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         services.AddServices(configuration);
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
         return services;
     }
     public static void AddServices(this IServiceCollection services, IConfiguration configuration)
@@ -31,7 +36,7 @@ public static class ServiceCollectionExtensions
         //Bind Jwt settings from configuration
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.AddSingleton<JwtSecurityTokenHandler>();
-        services.AddSingleton<JwtHelper>();
+        services.AddSingleton<IJwtHelper, JwtHelper>();
         services.AddHttpContextAccessor();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
 

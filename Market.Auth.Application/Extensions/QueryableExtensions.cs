@@ -91,7 +91,7 @@ public static class QueryableExtensions
                                        .Single()
                                        .MakeGenericMethod(typeof(T), property.PropertyType);
 
-        return (IQueryable<T>)method.Invoke(null, new object[] { source, orderByExpression });
+        return (IQueryable<T>)method.Invoke(null, [source, orderByExpression]);
     }
 
 }

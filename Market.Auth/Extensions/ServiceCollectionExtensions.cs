@@ -1,4 +1,4 @@
-﻿using Market.Auth.Application.Auth;
+﻿using Market.Auth.Application.Services.JwtServices.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -7,12 +7,12 @@ namespace Market.Auth.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureAuth(this IServiceCollection services,IConfiguration configuration)
+    public static IServiceCollection ConfigureAuth(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
 
         // JWT Settings
-        var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
+        var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>() ?? new();
 
         services.AddSingleton(jwtSettings);
 
@@ -38,5 +38,19 @@ public static class ServiceCollectionExtensions
 
         services.AddAuthorization();
         return services;
+    }
+
+    public static WebApplicationBuilder ConfigureSwagger(this WebApplicationBuilder builder, string appName)
+    {
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc(appName, new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = appName,
+                Version = "v1"
+            });
+        });
+        return builder;
     }
 }

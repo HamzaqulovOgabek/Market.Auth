@@ -8,7 +8,7 @@ public class UserLoginDto
 {
     [EmailOrUserNameValidation]
     public required string EmailOrUsername { get; set; } 
-    [PasswordValidation]
+    //[PasswordValidation]
     public required string Password { get; set; }
 
     public bool IsValidUserName(string userName)

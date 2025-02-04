@@ -16,7 +16,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [JwtAuthFilter]
+    //[JwtAuthFilter]
     public async Task<IActionResult> GetAsync(int id)
     {
         var user = await _service.GetAsync(id);
